@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Digital - Gedung Indonesia Menggugat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           CSS CUSTOM PROPERTIES
+        ============================================= */
+        :root {
+            --primary-navy: #1E3A8A;
+            --accent-blue: #3B82F6;
+            --white: #FFFFFF;
+            --text-dark: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --section-px: clamp(20px, 5vw, 80px);
+            --section-py: clamp(80px, 10vh, 140px);
+            --card-radius: 20px;
+            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-blur: blur(16px);
+            --touch-target: 44px;
+        }
+
+        /* =============================================
+           RESET & BASE
+        ============================================= */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 30%, #1E293B 0%, #0F172A 60%, #020617 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* =============================================
+           AMBIENT GLOW ORNAMENTS
+        ============================================= */
+        .bg-glow-1 {
+            position: fixed;
+            top: 15%;
+            left: -10%;
+            width: clamp(200px, 40vw, 500px);
+            height: clamp(200px, 40vw, 500px);
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-2 {
+            position: fixed;
+            bottom: 10%;
+            right: -5%;
+            width: clamp(250px, 45vw, 600px);
+            height: clamp(250px, 45vw, 600px);
+            background: radial-gradient(circle, rgba(30, 58, 138, 0.2) 0%, transparent 70%);
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* =============================================
+           NAVBAR
+        ============================================= */
+        .navbar-container {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            padding: 16px clamp(12px, 3vw, 50px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: var(--card-border);
+            border-radius: 50px;
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .brand-logo-fallback {
+            height: 32px;
+            width: 32px;
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .sub-brand {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            padding-left: 14px;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 6px;
+        }
+
+        .nav-links > li {
+            position: relative;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #E5E7EB;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.25s, background-color 0.25s;
+            padding: 9px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            min-height: var(--touch-target);
+        }
+
+        .nav-links > li > a:hover {
+            color: var(--accent-blue);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-links .has-dropdown::after {
+            content: '▾';
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(15, 23, 42, 0.97);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            min-width: 230px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            border-radius: 16px;
+            list-style: none;
+            padding: 8px 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+        }
+
+        .nav-links li:hover .dropdown-menu,
+        .nav-links li:focus-within .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-menu li a {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #E5E7EB;
+            border-radius: 0;
+            min-height: var(--touch-target);
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--white);
+        }
+
+        .dropdown-menu li:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hamburger-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: var(--card-border);
+            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            padding: 0;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .hamburger-btn:hover { background: rgba(59, 130, 246, 0.2); }
+
+        .hamburger-btn span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .hamburger-btn.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger-btn.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger-btn.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .mobile-nav-drawer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-nav-drawer.is-open {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-nav-drawer a {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            min-height: var(--touch-target);
+            display: flex;
+            align-items: center;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .mobile-nav-drawer a:hover {
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .mobile-nav-drawer .mobile-sub-link {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            padding: 8px 32px;
+        }
+
+        .mobile-nav-drawer .mobile-sub-link:hover { color: var(--white); }
+
+        .mobile-divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 4px 0;
+        }
+
+        /* =============================================
+           GLASS CARD BASE
+        ============================================= */
+        .glass-card-base {
+            background: var(--card-bg);
+            backdrop-filter: var(--card-blur);
+            -webkit-backdrop-filter: var(--card-blur);
+            border: var(--card-border);
+            border-radius: var(--card-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card-base,
+        .step-box,
+        .dampak-card,
+        .pledoi-box {
+            transition:
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.3s ease,
+                background-color 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .glass-card-base:hover,
+            .step-box:hover,
+            .dampak-card:hover,
+            .pledoi-box:hover {
+                transform: translateY(-5px);
+                background: rgba(255, 255, 255, 0.07);
+                border-color: rgba(59, 130, 246, 0.3);
+                box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+            }
+        }
+
+        .glass-card-base:active,
+        .step-box:active,
+        .dampak-card:active,
+        .pledoi-box:active {
+            transform: translateY(-2px) scale(0.99);
+        }
+
+        /* =============================================
+           SECTIONS — GLOBAL
+        ============================================= */
+        section {
+            padding: var(--section-py) var(--section-px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(26px, 4vw, 38px);
+            color: var(--white);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--accent-blue);
+            margin: 14px auto 0;
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--white);
+            margin: 0 0 28px 0;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 10px;
+        }
+
+        .sub-section-block {
+            width: 100%;
+            max-width: 1000px;
+            padding-top: 20px;
+            margin-bottom: 60px;
+        }
+
+        .timeline-container,
+        .main-story-container,
+        .content-wrapper {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* =============================================
+           1. HERO
+        ============================================= */
+        #beranda { background: transparent; }
+
+        .hero-glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            padding: clamp(36px, 6vw, 70px) clamp(28px, 6vw, 72px);
+            max-width: 820px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hero-tagline {
+            font-size: clamp(11px, 1.5vw, 13px);
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 6px 16px;
+            border-radius: 30px;
+        }
+
+        .hero-glass-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.15;
+        }
+
+        .hero-glass-card p {
+            font-size: clamp(14px, 1.8vw, 17px);
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.75;
+            max-width: 600px;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .btn-glass {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            min-height: var(--touch-target);
+            white-space: nowrap;
+        }
+
+        .btn-glass:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.15);
+        }
+
+        .btn-glass:active { transform: scale(0.97); }
+
+        .btn-glass-navy {
+            background: rgba(30, 58, 138, 0.5);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-glass-blue {
+            background: rgba(59, 130, 246, 0.25);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+        }
+
+        /* =============================================
+           2. LINIMASA
+        ============================================= */
+        #linimasa { justify-content: flex-start; }
+
+        .vertical-timeline {
+            position: relative;
+            border-left: 3px solid rgba(255, 255, 255, 0.08);
+            padding-left: clamp(20px, 4vw, 36px);
+            margin-left: clamp(30px, 4vw, 45px);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .timeline-badge {
+            position: absolute;
+            left: clamp(-70px, -7vw, -58px);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--white);
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
+            border: 3px solid #0F172A;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            white-space: nowrap;
+        }
+
+        .badge-navy { background-color: var(--primary-navy); }
+        .badge-blue { background-color: var(--accent-blue); }
+        .badge-gray { background-color: #4B5563; }
+
+        .timeline-content {
+            padding: clamp(16px, 2.5vw, 22px);
+            border-radius: 16px;
+        }
+
+        .timeline-content h4 {
+            color: var(--white);
+            font-size: clamp(15px, 2vw, 18px);
+            margin-bottom: 6px;
+        }
+
+        .timeline-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Bio Grid */
+        .bio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+            gap: 22px;
+        }
+
+        .bio-card {
+            padding: clamp(18px, 3vw, 26px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-highlight {
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .bio-avatar-wrapper {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .bio-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            filter: grayscale(40%) contrast(110%);
+            transition: filter 0.4s ease, transform 0.4s ease;
+        }
+
+        .bio-avatar-placeholder {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            padding: 16px;
+        }
+
+        .bio-avatar-placeholder svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.5;
+        }
+
+        .bio-avatar.img-error { opacity: 0; }
+        .bio-avatar.img-error + .bio-avatar-placeholder { display: flex; }
+
+        @media (hover: hover) {
+            .bio-card:hover .bio-avatar {
+                filter: grayscale(0%) contrast(100%);
+                transform: scale(1.04);
+            }
+        }
+
+        .bio-header { margin-bottom: 10px; }
+
+        .bio-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(17px, 2.5vw, 21px);
+            color: var(--white);
+            line-height: 1.3;
+        }
+
+        .bio-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .bio-role {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .vonis-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .tag-blue-glow {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93C5FD;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .tag-navy-glow {
+            background: rgba(30, 58, 138, 0.4);
+            color: #BFDBFE;
+            border: 1px solid rgba(30, 58, 138, 0.4);
+        }
+
+        .bio-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* Story Steps */
+        .story-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+            gap: 18px;
+        }
+
+        .step-box {
+            padding: clamp(18px, 2.5vw, 26px);
+            position: relative;
+            border-top: 4px solid var(--accent-blue);
+        }
+
+        .step-num {
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.04);
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .step-box h5 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #93C5FD;
+            font-weight: 600;
+        }
+
+        .step-box p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.55;
+        }
+
+        /* Dampak Grid */
+        .dampak-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+            gap: 18px;
+        }
+
+        .dampak-card { padding: clamp(18px, 2.5vw, 26px); }
+        .border-glow-blue { border-left: 5px solid var(--accent-blue); }
+        .border-glow-navy { border-left: 5px solid var(--primary-navy); }
+
+        .dampak-card h5 {
+            font-size: 15px;
+            color: var(--white);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .dampak-card p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* =============================================
+           3. PLEDOI SECTION
+        ============================================= */
+        .split-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+            gap: 28px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .pledoi-box {
+            padding: clamp(24px, 3.5vw, 42px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .text-blue-title { color: #93C5FD; }
+        .text-light-blue-title { color: #60A5FA; }
+
+        .pledoi-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(17px, 2.5vw, 22px);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.3;
+        }
+
+        .pledoi-box p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.7;
+        }
+
+        .pledoi-action-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* =============================================
+           4. MODAL — PLEDOI TEKS
+        ============================================= */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: env(safe-area-inset-top, 16px) env(safe-area-inset-right, 16px) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 16px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: min(96%, 800px);
+            max-height: min(90vh, 100%);
+            border-radius: 22px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.92) translateY(24px);
+            transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: clamp(16px, 2.5vw, 26px) clamp(20px, 3vw, 40px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: var(--white);
+        }
+
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--white);
+            font-size: 20px;
+            width: var(--touch-target);
+            height: var(--touch-target);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .modal-close-btn:hover { background: rgba(239, 68, 68, 0.4); }
+
+        .modal-body {
+            padding: clamp(20px, 3vw, 40px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body::-webkit-scrollbar { width: 5px; }
+        .modal-body::-webkit-scrollbar-thumb {
+            background-color: var(--accent-blue);
+            border-radius: 10px;
+        }
+
+        .manuscript-paper {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid var(--accent-blue);
+            padding: clamp(20px, 3vw, 32px);
+            border-radius: 12px;
+            margin-bottom: 22px;
+        }
+
+        .manuscript-meta {
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--accent-blue);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .manuscript-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(14px, 2vw, 17px);
+            line-height: 1.8;
+            color: #E5E7EB;
+            font-style: italic;
+            text-align: justify;
+            text-indent: clamp(20px, 3vw, 40px);
+        }
+
+        .manuscript-translation {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* =============================================
+           5. GALERI ARSIP — INTERACTIVE
+        ============================================= */
+        .galeri-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        /* Galeri card as a button for accessibility */
+        .galeri-card {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            border: none;
+            text-align: left;
+            color: inherit;
+            font-family: inherit;
+            padding: 0;
+            width: 100%;
+            position: relative;
+            transition:
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .galeri-card:hover {
+                transform: translateY(-6px);
+                border-color: rgba(59, 130, 246, 0.45);
+                box-shadow: 0 24px 50px rgba(59, 130, 246, 0.18);
+            }
+
+            .galeri-card:hover .galeri-img-wrapper img {
+                transform: scale(1.05);
+            }
+
+            .galeri-card:hover .galeri-open-hint {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .galeri-card:active { transform: scale(0.98); }
+
+        /* Consistent aspect ratio gallery images */
+        .galeri-img-wrapper {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .galeri-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s ease;
+        }
+
+        /* Hover hint overlay */
+        .galeri-open-hint {
+            position: absolute;
+            inset: 0;
+            background: rgba(59, 130, 246, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .galeri-open-hint span {
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Placeholder for missing images */
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            padding: 16px;
+            gap: 10px;
+        }
+
+        .img-placeholder svg {
+            width: 36px;
+            height: 36px;
+            opacity: 0.4;
+        }
+
+        .galeri-info {
+            padding: clamp(14px, 2vw, 22px);
+            flex: 1;
+        }
+
+        .galeri-info h4 {
+            font-size: 15px;
+            color: var(--white);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .galeri-info p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+
+        .shelfmark-tag {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #93C5FD;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            display: inline-block;
+        }
+
+        /* =============================================
+           6. GALERI MODAL
+        ============================================= */
+        .galeri-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s;
+            gap: 0;
+        }
+
+        .galeri-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .galeri-modal-card {
+            background: rgba(15, 23, 42, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: min(96%, 780px);
+            max-height: calc(100dvh - 40px);
+            border-radius: 22px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.9) translateY(30px);
+            transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .galeri-modal-overlay.active .galeri-modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Big close button — mobile-friendly */
+        .galeri-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .galeri-modal-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(16px, 2.5vw, 22px);
+            color: var(--white);
+            line-height: 1.3;
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        /* Large, comfortable close button for mobile */
+        .galeri-modal-close {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
+            font-size: 18px;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s, transform 0.15s;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .galeri-modal-close:hover {
+            background: rgba(239, 68, 68, 0.35);
+            transform: scale(1.05);
+        }
+
+        .galeri-modal-close:active { transform: scale(0.95); }
+
+        /* Close button label below icon */
+        .galeri-modal-close-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            line-height: 1;
+        }
+
+        .galeri-modal-close-inner .close-icon { font-size: 20px; }
+        .galeri-modal-close-inner .close-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #FCA5A5;
+        }
+
+        .galeri-modal-body {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            flex: 1;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) transparent;
+        }
+
+        .galeri-modal-body::-webkit-scrollbar { width: 4px; }
+        .galeri-modal-body::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 10px;
+        }
+
+        /* Large image area */
+        .galeri-modal-img-area {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .galeri-modal-img-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .galeri-modal-img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: var(--text-muted);
+        }
+
+        .galeri-modal-img-placeholder svg {
+            width: 56px;
+            height: 56px;
+            opacity: 0.3;
+        }
+
+        .galeri-modal-img-placeholder p {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            padding: 0 20px;
+            line-height: 1.5;
+        }
+
+        .galeri-modal-details {
+            padding: clamp(18px, 3vw, 30px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .galeri-modal-shelfmark {
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 5px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .galeri-modal-desc {
+            font-size: clamp(13px, 1.8vw, 15px);
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.7;
+        }
+
+        /* Mobile bottom close bar for easy thumb access */
+        .galeri-modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 14px 20px;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .galeri-modal-footer-close {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #FCA5A5;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        .galeri-modal-footer-close:hover { background: rgba(239, 68, 68, 0.3); }
+
+        @media (max-width: 600px) {
+            .galeri-modal-footer { display: block; }
+        }
+
+        /* =============================================
+           7. FOOTER
+        ============================================= */
+        .footer-credit {
+            background: rgba(2, 6, 23, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px 20px;
+            width: 100%;
+            text-align: center;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-team {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--white);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-team span {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .footer-univ {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* =============================================
+           ANIMATIONS
+        ============================================= */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =============================================
+           RESPONSIVE BREAKPOINTS
+        ============================================= */
+        @media (max-width: 900px) {
+            .split-layout,
+            .dampak-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .sub-brand { display: none; }
+            .hamburger-btn { display: flex; }
+
+            .vertical-timeline {
+                padding-left: 16px;
+                margin-left: 50px;
+            }
+
+            .timeline-badge {
+                left: -56px;
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .dampak-grid { grid-template-columns: 1fr; }
+
+            .bio-grid {
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+            }
+
+            .modal-card {
+                max-height: calc(100dvh - 32px);
+            }
+
+            .galeri-modal-card {
+                max-height: calc(100dvh - 32px);
+                border-radius: 18px;
+            }
+
+            .galeri-modal-img-area {
+                aspect-ratio: 4 / 3;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bio-grid,
+            .story-steps,
+            .galeri-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-glass-card h1 { font-size: clamp(24px, 7vw, 30px); }
+
+            .dashboard-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .dashboard-actions .btn-glass { justify-content: center; }
+
+            .vertical-timeline { margin-left: 44px; }
+            .pledoi-box { padding: 20px; }
+            .manuscript-quote { text-indent: 0; }
+
+            .galeri-modal-img-area { aspect-ratio: 1 / 1; }
+        }
+
+        @media (max-width: 360px) {
+            .navbar { padding: 8px 14px; }
+            .brand-text { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-1" aria-hidden="true"></div>
+    <div class="bg-glow-2" aria-hidden="true"></div>
+
+    <!-- ==================== NAVBAR ==================== -->
+    <div class="navbar-container">
+        <nav class="navbar" role="navigation" aria-label="Navigasi Utama">
+            <a href="#beranda" class="brand-container" aria-label="DigiTrace - Beranda">
+                <img
+                    src="LOGODIGI.png"
+                    alt="Logo DigiTrace Museum Digital"
+                    class="brand-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                >
+                <svg class="brand-logo-fallback" style="display:none;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect width="32" height="32" rx="8" fill="rgba(59,130,246,0.25)"/>
+                    <path d="M8 24V10l8-4 8 4v14l-8 3-8-3Z" stroke="#93C5FD" stroke-width="1.5" fill="none"/>
+                    <path d="M16 6v18M8 14h16" stroke="#93C5FD" stroke-width="1.2" opacity="0.5"/>
+                </svg>
+                <span class="brand-text">DIGITRACE</span>
+                <span class="sub-brand">Gedung Indonesia Menggugat</span>
+            </a>
+
+            <ul class="nav-links" role="list">
+                <li><a href="#beranda">Beranda</a></li>
+                <li>
+                    <a href="#linimasa" class="has-dropdown" aria-haspopup="true" aria-expanded="false">Linimasa</a>
+                    <ul class="dropdown-menu" role="menu" aria-label="Sub-navigasi Linimasa">
+                        <li role="none"><a href="#transformasi-gedung" role="menuitem">1. Transformasi Gedung</a></li>
+                        <li role="none"><a href="#tokoh-landraad" role="menuitem">2. Tokoh Landraad</a></li>
+                        <li role="none"><a href="#kronologi-sidang" role="menuitem">3. Kronologi Sidang</a></li>
+                        <li role="none"><a href="#dampak-politik" role="menuitem">4. Dampak Politik</a></li>
+                    </ul>
+                </li>
+                <li><a href="#pledoi">Pledoi</a></li>
+                <li><a href="#galeri">Galeri Arsip</a></li>
+            </ul>
+
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobileDrawer">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ==================== MOBILE DRAWER ==================== -->
+    <div class="mobile-nav-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menu navigasi mobile">
+        <a href="#beranda" class="mobile-nav-link">Beranda</a>
+        <a href="#linimasa" class="mobile-nav-link">Linimasa</a>
+        <div class="mobile-divider" aria-hidden="true"></div>
+        <a href="#transformasi-gedung" class="mobile-sub-link">1. Transformasi Gedung</a>
+        <a href="#tokoh-landraad" class="mobile-sub-link">2. Tokoh Landraad</a>
+        <a href="#kronologi-sidang" class="mobile-sub-link">3. Kronologi Sidang</a>
+        <a href="#dampak-politik" class="mobile-sub-link">4. Dampak Politik</a>
+        <div class="mobile-divider" aria-hidden="true"></div>
+        <a href="#pledoi" class="mobile-nav-link">Pledoi</a>
+        <a href="#galeri" class="mobile-nav-link">Galeri Arsip</a>
+    </div>
+
+    <!-- ==================== HERO ==================== -->
+    <section id="beranda" aria-labelledby="hero-heading">
+        <div class="hero-glass-card">
+            <span class="hero-tagline">DigiTrace: Jelajah Juang, Jangkau Sejarah</span>
+            <h1 id="hero-heading">Menolak Bungkam:<br>Saksi Bisu Indonesia Menggugat</h1>
+            <p>
+                Eksplorasi virtual jejak sejarah ruang sidang Landraad Bandung 1930.
+                Tempat di mana Ir. Soekarno membalikkan meja keadilan kolonial melalui pidato pembelaan ikonik
+                yang meruntuhkan batas-batas hierarki imperium Barat.
+            </p>
+            <div class="dashboard-actions">
+                <a href="#transformasi-gedung" class="btn-glass btn-glass-navy">🌐 Jelajahi Tur Virtual GIM</a>
+                <a href="#galeri" class="btn-glass btn-glass-blue">📂 Buka Galeri Arsip</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LINIMASA ==================== -->
+    <section id="linimasa" aria-labelledby="linimasa-heading">
+        <h2 class="section-title" id="linimasa-heading">Kronologi Perjalanan &amp; Peradilan</h2>
+
+        <!-- Sub-section 1: Transformasi Gedung -->
+        <div id="transformasi-gedung" class="sub-section-block">
+            <h3 class="subsection-title">🏛️ Transformasi Fisik Gedung (GIM)</h3>
+            <div class="vertical-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-badge badge-navy" aria-label="Tahun 1907">1907</div>
+                    <div class="timeline-content glass-card-base">
+                        <h4>Rumah Tinggal Pejabat Militer</h4>
+                        <p>Awal berdiri sebagai kediaman resmi pegawai tinggi dan militer Hindia Belanda dengan langgam arsitektur <em>Indische Empire Style</em> yang megah.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-badge badge-blue" aria-label="Tahun 1917">1917</div>
+                    <div class="timeline-content glass-card-base">
+                        <h4>Gedung Landraad Bandoeng</h4>
+                        <p>Pemerintah kolonial mengalihfungsikan gedung ini menjadi Pengadilan Negeri (Landraad) Kelas 1 untuk menyidangkan perkara pribumi di Priangan.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-badge badge-gray" aria-label="Dekade 1970an">1970s</div>
+                    <div class="timeline-content glass-card-base">
+                        <h4>Kantor Metrologi</h4>
+                        <p>Pasca-kemerdekaan RI, gedung ini sempat diserahkan ke Departemen Perdagangan untuk laboratorium tera alat timbang hingga sempat tertutup sekat perkantoran.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-badge badge-navy" aria-label="Tahun 2002">2002</div>
+                    <div class="timeline-content glass-card-base">
+                        <h4>Gedung Indonesia Menggugat</h4>
+                        <p>Direstorasi penuh tanpa mengubah bentuk asli bangunan 1907. Diresmikan pada 18 Juni 2002 sebagai cagar budaya ruang publik kebangsaan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub-section 2: Tokoh Landraad -->
+        <div id="tokoh-landraad" class="sub-section-block">
+            <h3 class="subsection-title">👥 4 Tokoh di Kursi Pesakitan Landraad</h3>
+            <div class="bio-grid">
+                <!-- Card 1: Soekarno -->
+                <div class="bio-card glass-card-base card-highlight">
+                    <div class="bio-avatar-wrapper" data-label="Foto Ir. Soekarno">
+                        <img
+                            src="soekarno.jpg"
+                            alt="Potret Ir. Soekarno, Ketua PNI, dalam persidangan Landraad Bandung 1930"
+                            class="bio-avatar"
+                            onerror="this.classList.add('img-error'); this.nextElementSibling.style.display='flex';"
+                        >
+                        <div class="bio-avatar-placeholder" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <span>Ir. Soekarno</span>
+                        </div>
+                    </div>
+                    <div class="bio-header"><h4>Ir. Soekarno</h4></div>
+                    <div class="bio-meta-row">
+                        <p class="bio-role">Ketua &amp; Ideolog PNI</p>
+                        <span class="vonis-tag tag-blue-glow">4 Tahun Penjara</span>
+                    </div>
+                    <p class="bio-desc">Ditangkap karena agitasi politiknya yang radikal. Di gedung ini, beliau membacakan pledoi legendaris yang mengguncang Batavia.</p>
+                </div>
+
+                <!-- Card 2: Gatot -->
+                <div class="bio-card glass-card-base">
+                    <div class="bio-avatar-wrapper" data-label="Foto R. Gatot Mangkupraja">
+                        <img
+                            src="gatot.jpeg"
+                            alt="Potret R. Gatot Mangkupraja, Sekretaris II PNI, terdakwa sidang Landraad 1930"
+                            class="bio-avatar"
+                            onerror="this.classList.add('img-error'); this.nextElementSibling.style.display='flex';"
+                        >
+                        <div class="bio-avatar-placeholder" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <span>R. Gatot Mangkupraja</span>
+                        </div>
+                    </div>
+                    <div class="bio-header"><h4>R. Gatot Mangkupraja</h4></div>
+                    <div class="bio-meta-row">
+                        <p class="bio-role">Sekretaris II PNI</p>
+                        <span class="vonis-tag tag-navy-glow">2 Tahun Penjara</span>
+                    </div>
+                    <p class="bio-desc">Motor penggerak roda organisasi internal partai yang bertugas mengonsolidasikan simpul kader di berbagai daerah regional.</p>
+                </div>
+
+                <!-- Card 3: Maskoen -->
+                <div class="bio-card glass-card-base">
+                    <div class="bio-avatar-wrapper" data-label="Foto Maskoen Soemadiredja">
+                        <img
+                            src="maskoen.jpg"
+                            alt="Potret Maskoen Soemadiredja, Redaktur Propaganda PNI, terdakwa sidang Landraad 1930"
+                            class="bio-avatar"
+                            onerror="this.classList.add('img-error'); this.nextElementSibling.style.display='flex';"
+                        >
+                        <div class="bio-avatar-placeholder" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <span>Maskoen S.</span>
+                        </div>
+                    </div>
+                    <div class="bio-header"><h4>Maskoen S.</h4></div>
+                    <div class="bio-meta-row">
+                        <p class="bio-role">Redaktur Propaganda</p>
+                        <span class="vonis-tag tag-navy-glow">1 th 8 bln</span>
+                    </div>
+                    <p class="bio-desc">Tokoh pergerakan akar rumput yang sangat aktif menulis pamflet dan selebaran politik untuk membakar kesadaran rakyat.</p>
+                </div>
+
+                <!-- Card 4: Soepriadinata -->
+                <div class="bio-card glass-card-base">
+                    <div class="bio-avatar-wrapper" data-label="Foto Soepriadinata">
+                        <img
+                            src="soepriadinata.jpg"
+                            alt="Potret Soepriadinata, Penggerak Pemuda PNI, terdakwa sidang Landraad 1930"
+                            class="bio-avatar"
+                            onerror="this.classList.add('img-error'); this.nextElementSibling.style.display='flex';"
+                        >
+                        <div class="bio-avatar-placeholder" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            <span>Soepriadinata</span>
+                        </div>
+                    </div>
+                    <div class="bio-header"><h4>Soepriadinata</h4></div>
+                    <div class="bio-meta-row">
+                        <p class="bio-role">Penggerak Pemuda</p>
+                        <span class="vonis-tag tag-navy-glow">1 th 3 bln</span>
+                    </div>
+                    <p class="bio-desc">Pemimpin sayap pemuda yang mengamankan jalannya rapat akbar serta memobilisasi massa simpatisan PNI.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub-section 3: Kronologi Sidang -->
+        <div id="kronologi-sidang" class="sub-section-block">
+            <h3 class="subsection-title">🎬 Kronologi Kasus &amp; Sidang 1930</h3>
+            <div class="story-steps">
+                <div class="step-box glass-card-base">
+                    <div class="step-num" aria-hidden="true">01</div>
+                    <h5>Penangkapan Serentak</h5>
+                    <p><strong>29 Des 1929:</strong> PID kolonial menggerebek para pemimpin PNI secara serentak di Yogyakarta dan Bandung akibat kepanikan politik.</p>
+                </div>
+                <div class="step-box glass-card-base">
+                    <div class="step-num" aria-hidden="true">02</div>
+                    <h5>Isolasi Banceuy</h5>
+                    <p><strong>Jan – Agst 1930:</strong> Soekarno cs diisolasi ketat selama 8 bulan di sel nomor 5 Penjara Banceuy yang sangat sempit.</p>
+                </div>
+                <div class="step-box glass-card-base">
+                    <div class="step-num" aria-hidden="true">03</div>
+                    <h5>Sidang Maraton</h5>
+                    <p><strong>Agst – Des 1930:</strong> Proses peradilan maraton digelar di Landraad Bandung. Pledoi monumental dibacakan awal Desember.</p>
+                </div>
+                <div class="step-box glass-card-base">
+                    <div class="step-num" aria-hidden="true">04</div>
+                    <h5>Ketuk Palu Vonis</h5>
+                    <p><strong>22 Des 1930:</strong> Hakim mengetok vonis hukuman, dan para terdakwa langsung dievakuasi ke Penjara Sukamiskin.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub-section 4: Dampak Politik -->
+        <div id="dampak-politik" class="sub-section-block">
+            <h3 class="subsection-title">📈 Dampak Politik &amp; Efek Domino</h3>
+            <div class="dampak-grid">
+                <div class="dampak-card glass-card-base border-glow-blue">
+                    <h5>Solidaritas Lintas Faksi Nasional</h5>
+                    <p>Tindakan represif kolonial di Landraad justru menjadi bumerang. Faksi Islam, sekuler, dan kiri bersatu menyuarakan kecaman, mempercepat rasa persatuan nasional.</p>
+                </div>
+                <div class="dampak-card glass-card-base border-glow-navy">
+                    <h5>Lahirnya Partindo &amp; PNI Baru</h5>
+                    <p>Peta gerakan terpecah demi taktik: Partindo melanjutkan aksi pergerakan massa radikal, sedangkan PNI Baru (Hatta-Sjahrir) berfokus pada kaderisasi intelektual.</p>
+                </div>
+                <div class="dampak-card glass-card-base border-glow-navy">
+                    <h5>Guncangan Parlemen Belanda</h5>
+                    <p>Teks Indonesia Menggugat diselundupkan oleh jaringan perhimpunan mahasiswa ke Eropa, memicu perdebatan panas di dalam <em>Tweede Kamer</em> (DPR Belanda).</p>
+                </div>
+                <div class="dampak-card glass-card-base border-glow-blue">
+                    <h5>Tekanan Global &amp; Remisi</h5>
+                    <p>Kerasnya tekanan opini publik internasional memaksa Batavia melunak. Masa tahanan Soekarno dipotong besar-besaran hingga bebas akhir 1931.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PLEDOI ==================== -->
+    <section id="pledoi" aria-labelledby="pledoi-heading">
+        <h2 class="section-title" id="pledoi-heading">Detik-Detik Pembacaan Pledoi</h2>
+        <div class="content-wrapper">
+            <div class="split-layout">
+                <div class="pledoi-box glass-card-base">
+                    <h3 class="text-blue-title">🗣️ Drama Teatrikal Pledoi (2 Des 1930)</h3>
+                    <p>Suasana ruang sidang Landraad penuh sesak dan mencekam. Mengenakan setelan jas/beskap putih necis dan peci hitam, Soekarno berdiri tegap di belakang podium kayu kecil.</p>
+                    <p>Selama dua hari berturut-turut, beliau membacakan naskah draf pembelaan setebal ratusan halaman berjudul <strong>"Indonesië Klaagt Aan"</strong> (Indonesia Menggugat). Bukannya membela diri, pidato baritonnya justru mendakwa balik struktur kebobrokan imperialisme Barat.</p>
+                </div>
+                <div class="pledoi-box glass-card-base">
+                    <h3 class="text-light-blue-title">⚔️ Pertarungan Bahasa Tingkat Tinggi</h3>
+                    <p>Pengadilan kolonial awalnya meremehkan dan mengira terdakwa bumiputera akan menggunakan bahasa Melayu pasar atau Sunda yang umum digunakan di Landraad kelas bawah.</p>
+                    <p>Namun, Soekarno sengaja memakai <strong>bahasa Belanda tingkat tinggi (<em>Hoog-Nederlands</em>)</strong> yang sangat fasih secara akademis. Langkah politis ini sukses meruntuhkan hierarki rasial, membalikkan dominasi psikologis ruang sidang, dan membuat Majelis Hakim Eropa kewalahan.</p>
+                </div>
+            </div>
+
+            <div class="pledoi-action-wrapper">
+                <button class="btn-glass btn-glass-blue" id="openPledoiBtn" aria-haspopup="dialog">
+                    📖 Buka Arsip Teks Indonesia Menggugat
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MODAL PLEDOI ==================== -->
+    <div class="modal-overlay" id="pledoiModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Naskah Pidato Pembelaan</h3>
+                <button class="modal-close-btn" id="closePledoiBtn" aria-label="Tutup modal pledoi">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="manuscript-paper">
+                    <div class="manuscript-meta">Fragmen I – Dakwaan Terhadap Imperialisme</div>
+                    <p class="manuscript-quote">
+                        "De imperialistische overheersing is een stelsel van uitzuiging, een stelsel dat het Indonesische volk arm en onwetend houdt..."
+                    </p>
+                    <p class="manuscript-translation">
+                        <strong>Terjemahan:</strong> "Penjajahan imperialis adalah suatu sistem pemerasan, suatu sistem yang membiarkan rakyat Indonesia tetap miskin dan bodoh. Peradilan ini tidak akan mampu meredam gelombang kebangkitan kami, karena yang mendakwa saat ini bukanlah Soekarno sebagai individu, melainkan derita jutaan rakyat yang tertindas!"
+                    </p>
+                </div>
+
+                <div class="manuscript-paper">
+                    <div class="manuscript-meta">Fragmen II – Visi Kemerdekaan</div>
+                    <p class="manuscript-quote">
+                        "Indonesia menggugat bukan karena kebencian rasial, melainkan karena keharusan sejarah untuk meruntuhkan rantai tirani kolonial!"
+                    </p>
+                    <p class="manuscript-translation">
+                        <strong>Catatan Kontekstual:</strong> Bagian ini memicu kegemparan luar biasa di ruang sidang Landraad karena Soekarno secara terang-terangan memproyeksikan hancurnya kekuasaan Kerajaan Belanda di masa depan di hadapan para hakim Eropa.
+                    </p>
+                </div>
+
+                <div class="manuscript-paper" style="border-left-color: var(--primary-navy);">
+                    <div class="manuscript-meta">Fragmen III – Kalimat Penutup yang Mengguncang</div>
+                    <p class="manuscript-quote">
+                        "Matahari terbit bukan karena perintah ayam berkokok, tetapi ayam berkokok karena matahari terbit! Begitu pula dengan kemerdekaan Indonesia, ia akan datang bukan atas belas kasihan, melainkan sebagai hukum alam yang mutlak!"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== GALERI ==================== -->
+    <section id="galeri" aria-labelledby="galeri-heading">
+        <h2 class="section-title" id="galeri-heading">Galeri Arsip Digital Orisinal</h2>
+        <div class="content-wrapper">
+            <div class="galeri-grid">
+
+                <!-- Kartu 1 -->
+                <button
+                    class="galeri-card glass-card-base"
+                    data-title="Ir. Soekarno dalam Persidangan"
+                    data-shelfmark="Shelfmark: KITLV 142737"
+                    data-desc="Potret Ir. Soekarno bersama para tokoh PNI lainnya saat menghadapi proses hukum di Landraad Bandung. Foto ini mengabadikan momen saat mereka duduk di kursi pesakitan, menunjukkan keteguhan sikap di hadapan pengadilan kolonial."
+                    data-img="1740107199.jpg"
+                    data-img-alt="Ir. Soekarno dalam Persidangan"
+                    aria-haspopup="dialog"
+                >
+                    <div class="galeri-img-wrapper">
+                        <img
+                            src="1740107199.jpg"
+                            alt="Ir. Soekarno dalam Persidangan"
+                            style="width:100%;height:100%;object-fit:cover;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        >
+                        <div class="img-placeholder" aria-hidden="true" style="display:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                            <span>Foto tidak ditemukan</span>
+                        </div>
+                        <div class="galeri-open-hint" aria-hidden="true">
+                            <span>🔍 Lihat Detail</span>
+                        </div>
+                    </div>
+                    <div class="galeri-info">
+                        <h4>Ir. Soekarno dalam Persidangan</h4>
+                        <p>Potret Ir. Soekarno bersama para tokoh PNI lainnya saat menghadapi proses hukum di Landraad Bandung. Foto ini mengabadikan momen saat mereka duduk di kursi pesakitan, menunjukkan keteguhan sikap di hadapan pengadilan kolonial.</p>
+                        <span class="shelfmark-tag">Shelfmark: KITLV 142737</span>
+                    </div>
+                </button>
+
+                <!-- Kartu 2 -->
+                <button
+                    class="galeri-card glass-card-base"
+                    data-title="Suasana Ruang Pertemuan"
+                    data-shelfmark="Shelfmark: KITLV 5034"
+                    data-desc="Dokumentasi arsitektur interior ruang utama kompleks peradilan Landraad Bandung pada fase-fase awal operasional kolonial. Tampak ornamen khas Indische Empire Style dengan langit-langit tinggi dan jendela besar yang menjadi ciri khas bangunan kolonial Belanda di Hindia."
+                    data-img="6871.webp"
+                    data-img-alt="Foto suasana interior ruang pertemuan Landraad Bandung"
+                    aria-haspopup="dialog"
+                >
+                    <div class="galeri-img-wrapper">
+                          <img
+                          src="6871.webp"
+                          alt="Foto suasana interior ruang pertemuan Landraad Bandung"
+                          style="width:100%;height:100%;object-fit:cover;"
+                      >
+                      <div class="galeri-open-hint" aria-hidden="true">
+                          <span>🔍 Lihat Detail</span>
+                      </div>
+                  </div>
+                    <div class="galeri-info">
+                        <h4>Suasana Ruang Pertemuan</h4>
+                        <p>Dokumentasi arsitektur interior ruang utama kompleks peradilan Landraad Bandung pada fase-fase awal operasional kolonial.</p>
+                        <span class="shelfmark-tag">Shelfmark: KITLV 5034</span>
+                    </div>
+                </button>
+
+                <!-- Kartu 3 -->
+              <button
+                  class="galeri-card glass-card-base"
+                  data-title="Raden Hadji Moehamad Roesdi"
+                  data-shelfmark="Shelfmark: KITLV 6380"
+                  data-desc="Potret resmi Kepala Penghulu (Hoofd-Pengoeloe) yang bertugas memandu sumpah keagamaan Islam bagi terdakwa bumiputera di Landraad Bandung. Beliau merupakan penghubung antara sistem hukum kolonial Belanda dengan tatanan hukum adat dan agama yang berlaku bagi masyarakat pribumi."
+                  data-img="R-hadji.png"
+                  data-img-alt="Potret resmi Raden Hadji Moehamad Roesdi, Kepala Penghulu Landraad"
+                  aria-haspopup="dialog"
+              >
+                  <div class="galeri-img-wrapper">
+                      <img
+                          src="R-hadji.png"
+                          alt="Potret resmi Raden Hadji Moehamad Roesdi, Kepala Penghulu Landraad"
+                          style="width:100%;height:100%;object-fit:cover;"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      >
+                      <div class="img-placeholder" aria-hidden="true" style="display:none;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                          <span>Foto tidak ditemukan</span>
+                      </div>
+                      <div class="galeri-open-hint" aria-hidden="true">
+                          <span>🔍 Lihat Detail</span>
+                      </div>
+                  </div>
+                  <div class="galeri-info">
+                      <h4>Raden Hadji Moehamad Roesdi</h4>
+                      <p>Potret resmi Kepala Penghulu (Hoofd-Pengoeloe) yang bertugas memandu sumpah keagamaan Islam bagi terdakwa bumiputera.</p>
+                      <span class="shelfmark-tag">Shelfmark: KITLV 6380</span>
+                  </div>
+              </button>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== GALERI MODAL ==================== -->
+    <div
+        class="galeri-modal-overlay"
+        id="galeriModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="galeriModalTitle"
+    >
+        <div class="galeri-modal-card">
+            <!-- Header with close button -->
+            <div class="galeri-modal-header">
+                <h3 id="galeriModalTitle">Detail Arsip</h3>
+                <button class="galeri-modal-close" id="galeriModalClose" aria-label="Tutup galeri">
+                    <div class="galeri-modal-close-inner">
+                        <span class="close-icon">&times;</span>
+                        <span class="close-label">Tutup</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="galeri-modal-body">
+                <!-- Large image -->
+                <div class="galeri-modal-img-area" id="galeriModalImgArea">
+                    <!-- Content injected by JS -->
+                </div>
+
+                <!-- Details -->
+                <div class="galeri-modal-details">
+                    <span class="galeri-modal-shelfmark" id="galeriModalShelfmark"></span>
+                    <p class="galeri-modal-desc" id="galeriModalDesc"></p>
+                </div>
+            </div>
+
+            <!-- Mobile bottom close bar -->
+            <div class="galeri-modal-footer">
+                <button class="galeri-modal-footer-close" id="galeriModalFooterClose">
+                    ✕ &nbsp;Tutup Galeri
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer-credit">
+        <div class="footer-content">
+            <p class="footer-team">Developed with pride by <span>Tim DigiTrace</span></p>
+            <p class="footer-univ">Telkom University &copy; 2026. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        /* ============================================================
+           UTILITY: Lock / Unlock body scroll (preserves scroll pos)
+        ============================================================ */
+        let _scrollY = 0;
+
+        function lockBodyScroll() {
+            _scrollY = window.scrollY;
+            document.body.style.top = `-${_scrollY}px`;
+            document.body.classList.add('modal-open');
+        }
+
+        function unlockBodyScroll() {
+            document.body.classList.remove('modal-open');
+            document.body.style.top = '';
+            window.scrollTo(0, _scrollY);
+        }
+
+        /* ============================================================
+           MODAL PLEDOI
+        ============================================================ */
+        const pledoiModal  = document.getElementById('pledoiModal');
+        const openBtn      = document.getElementById('openPledoiBtn');
+        const closePledoi  = document.getElementById('closePledoiBtn');
+        let lastFocusPledoi = null;
+
+        function openPledoiModal() {
+            lastFocusPledoi = document.activeElement;
+            pledoiModal.classList.add('active');
+            lockBodyScroll();
+            closePledoi.focus();
+        }
+
+        function closePledoiModal() {
+            pledoiModal.classList.remove('active');
+            unlockBodyScroll();
+            if (lastFocusPledoi) lastFocusPledoi.focus();
+        }
+
+        openBtn.addEventListener('click', openPledoiModal);
+        closePledoi.addEventListener('click', closePledoiModal);
+        pledoiModal.addEventListener('click', (e) => { if (e.target === pledoiModal) closePledoiModal(); });
+
+        /* ============================================================
+           GALERI MODAL — Interaktif
+        ============================================================ */
+        const galeriModal        = document.getElementById('galeriModal');
+        const galeriModalTitle   = document.getElementById('galeriModalTitle');
+        const galeriModalShelfmark = document.getElementById('galeriModalShelfmark');
+        const galeriModalDesc    = document.getElementById('galeriModalDesc');
+        const galeriModalImgArea = document.getElementById('galeriModalImgArea');
+        const galeriModalClose   = document.getElementById('galeriModalClose');
+        const galeriModalFooterClose = document.getElementById('galeriModalFooterClose');
+        let lastFocusGaleri = null;
+
+        function openGaleriModal(card) {
+            const title    = card.dataset.title    || 'Detail Arsip';
+            const shelfmark = card.dataset.shelfmark || '';
+            const desc     = card.dataset.desc     || '';
+            const imgSrc   = card.dataset.img      || '';
+            const imgAlt   = card.dataset.imgAlt   || title;
+
+            // Set text content
+            galeriModalTitle.textContent    = title;
+            galeriModalShelfmark.textContent = shelfmark;
+            galeriModalDesc.textContent     = desc;
+
+            // Build image area
+            galeriModalImgArea.innerHTML = '';
+            if (imgSrc) {
+                const img = document.createElement('img');
+                img.src   = imgSrc;
+                img.alt   = imgAlt;
+                img.onerror = () => {
+                    galeriModalImgArea.innerHTML = buildImgPlaceholder(imgAlt);
+                };
+                galeriModalImgArea.appendChild(img);
+            } else {
+                galeriModalImgArea.innerHTML = buildImgPlaceholder(imgAlt);
+            }
+
+            lastFocusGaleri = document.activeElement;
+            galeriModal.classList.add('active');
+            lockBodyScroll();
+            galeriModalClose.focus();
+        }
+
+        function buildImgPlaceholder(label) {
+            return `
+                <div class="galeri-modal-img-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="m21 15-5-5L5 21"/>
+                    </svg>
+                    <p>${label}</p>
+                    <p style="font-size:12px;color:#4B5563;">Foto arsip belum tersedia.<br>Ganti atribut <code>data-img</code> dengan path gambar asli.</p>
+                </div>`;
+        }
+
+        function closeGaleriModal() {
+            galeriModal.classList.remove('active');
+            unlockBodyScroll();
+            if (lastFocusGaleri) lastFocusGaleri.focus();
+        }
+
+        // Attach click handlers to all galeri cards
+        document.querySelectorAll('.galeri-card').forEach(card => {
+            card.addEventListener('click', () => openGaleriModal(card));
+        });
+
+        galeriModalClose.addEventListener('click', closeGaleriModal);
+        galeriModalFooterClose.addEventListener('click', closeGaleriModal);
+        galeriModal.addEventListener('click', (e) => { if (e.target === galeriModal) closeGaleriModal(); });
+
+        /* ============================================================
+           SHARED: Close any active modal on Escape
+        ============================================================ */
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (galeriModal.classList.contains('active'))  closeGaleriModal();
+            else if (pledoiModal.classList.contains('active')) closePledoiModal();
+            else if (mobileDrawer.classList.contains('is-open')) { closeDrawer(); hamburgerBtn.focus(); }
+        });
+
+        /* ============================================================
+           HAMBURGER / MOBILE DRAWER
+        ============================================================ */
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+
+        function openDrawer() {
+            hamburgerBtn.classList.add('is-open');
+            hamburgerBtn.setAttribute('aria-expanded', 'true');
+            mobileDrawer.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+            hamburgerBtn.classList.remove('is-open');
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            mobileDrawer.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileDrawer.classList.contains('is-open') ? closeDrawer() : openDrawer();
+        });
+
+        mobileDrawer.querySelectorAll('a').forEach(link => link.addEventListener('click', closeDrawer));
+
+        /* ============================================================
+           SCROLL-BASED NAVBAR OPACITY
+        ============================================================ */
+        const navbarEl = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            navbarEl.style.background = window.scrollY > 40
+                ? 'rgba(9, 14, 30, 0.92)'
+                : 'rgba(15, 23, 42, 0.75)';
+        }, { passive: true });
+    </script>
+
+</body>
+</html>
